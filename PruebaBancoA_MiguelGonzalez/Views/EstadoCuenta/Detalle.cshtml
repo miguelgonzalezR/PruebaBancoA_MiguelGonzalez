@@ -1,0 +1,110 @@
+﻿@model PruebaBancoA_MiguelGonzalez.Models.TarjetaEC
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Estado de Cuenta</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <!-- Incluir SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5" id="contentToExport">
+        <h2 class="mb-4">Estado de Cuenta de TC</h2>
+
+        <div class="row mb-3 estado-cuenta-header">
+            <div class="col-md-6">
+                <p><strong>Nombre del Cliente: @Model.Nombre @Model.Apellido </strong> </p>
+                <p><strong>Número de Tarjeta de Crédito: @Model.Trajeta </strong> </p>
+            </div>
+
+            <div class="col-md-6">
+                <p><strong>Saldo Actual:</strong> $@Model.SaldoActual</p>
+                <p><strong>Límite de Crédito:</strong> $@Model.LimiteCredito</p>
+                <p><strong>Saldo Disponible:</strong> $@Model.SaldoDisponible</p>
+                <p><strong>Interés Bonificable:</strong> $@Model.InteresBonificable</p>
+                <p><strong>Cuota Mínima a Pagar:</strong> $@Model.CuotaMinimaAPagar</p>
+                <p><strong>Monto Total a Pagar:</strong> $@Model.MontoTotalAPagar</p>
+                <p><strong>Pago de Contado con Intereses:</strong> $@Model.PagoContadoConIntereses</p>
+            </div>
+        </div>
+
+        <table class="table table-bordered estado-cuenta-table">
+            <thead>
+                <tr>
+                    <th>Número de Autorización</th>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Compras in Model.ComprasMesActual)
+                {
+                    <tr>
+                        <td>@Compras.Id</td>
+                        <td>@Compras.FechaCompra.ToString("dd-MM-yyyy")</td>
+                        <td>@Compras.Descripcion</td>
+                        <td>$@Compras.Monto</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="col-md-12">
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Regresar</a>
+
+
+            <button onclick="exportToExcel()" class="btn btn-secondary">Exportar a Excel</button>
+
+        </div>
+
+        <div class="row mt-3">
+            <p>Mes Actual: $@Model.TotalComprasMesActual</p>
+        </div>
+
+        <div class="row mt-3">
+            <p>Mes Anterior: $@Model.TotalComprasMesAnterior</p>
+        </div>
+
+        
+    </div>
+
+    <!-- Pasar datos a JSON -->
+    <script>
+        const estadoCuentaData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    </script>
+
+    <script>
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            const wsData = [
+                ['Nombre del Cliente', estadoCuentaData.Nombre + ' ' + estadoCuentaData.Apellido],
+                ['Número de Tarjeta de Crédito', estadoCuentaData.Trajeta],
+                ['Saldo Actual', estadoCuentaData.SaldoActual],
+                ['Límite de Crédito', estadoCuentaData.LimiteCredito],
+                ['Saldo Disponible', estadoCuentaData.SaldoDisponible],
+                ['Interés Bonificable', estadoCuentaData.InteresBonificable],
+                ['Cuota Mínima a Pagar', estadoCuentaData.CuotaMinimaAPagar],
+                ['Monto Total a Pagar', estadoCuentaData.MontoTotalAPagar],
+                ['Pago de Contado con Intereses', estadoCuentaData.PagoContadoConIntereses],
+                [],
+                ['Compras del Mes Actual'],
+                ['Número de Autorización', 'Fecha', 'Descripción', 'Monto']
+            ];
+
+            estadoCuentaData.ComprasMesActual.forEach(compra => {
+                wsData.push([compra.Id, new Date(compra.FechaCompra).toLocaleDateString('es-ES'), compra.Descripcion, compra.Monto]);
+            });
+
+            wsData.push([], ['Total de Compras'], ['Mes Actual', estadoCuentaData.TotalComprasMesActual], ['Mes Anterior', estadoCuentaData.TotalComprasMesAnterior]);
+
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Estado de Cuenta');
+            XLSX.writeFile(wb, 'estado_cuenta.xlsx');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+﻿@model PaginatedList<PruebaBancoA_MiguelGonzalez.Models.Tarjetas>
+
+@{
+    ViewData["Title"] = "Listado de Tarjetas";
+    var pageSize = ViewBag.PageSize as int?;
+    var search = ViewBag.Search as string;
+}
+
+<h2>Listado de Tarjetas</h2>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label for="recordsPerPage">Mostrar</label>
+        <select id="recordsPerPage" class="form-control d-inline w-auto">
+            @if (pageSize == 10)
+            {
+                <option value="10" selected>10</option>
+            }
+            else
+            {
+                <option value="10">10</option>
+            }
+
+            @if (pageSize == 20)
+            {
+                <option value="20" selected>20</option>
+            }
+            else
+            {
+                <option value="20">20</option>
+            }
+
+            @if (pageSize == 30)
+            {
+                <option value="30" selected>30</option>
+            }
+            else
+            {
+                <option value="30">30</option>
+            }
+        </select>
+        <span>resultados</span>
+    </div>
+    <div class="col-md-6 text-right">
+        <label for="search">Buscar:</label>
+        <input type="text" id="search" class="form-control d-inline w-auto" value="@search" />
+    </div>
+</div>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Número de Tarjeta</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody id="tarjetasTable">
+        @foreach (var tarjeta in Model)
+        {
+            <tr>
+                <td>@tarjeta.Trajeta</td>
+                <td>@tarjeta.Nombre</td>
+                <td>@tarjeta.Apellido</td>
+                <td>
+                    <a href="@Url.Action("Detalle", "EstadoCuenta", new { tarjetaId = tarjeta.Id })" class="btn btn-primary">Estado de Cuenta</a>
+                    <a href="@Url.Action("AgregarRCompra", "RegistroCompra", new { tarjetaId = tarjeta.Id })" class="btn btn-success">Registrar Compra</a>
+                    <a href="@Url.Action("AgregarPago", "RegistroPago", new { tarjetaId = tarjeta.Id })" class="btn btn-info">Registrar Pago</a>
+                    <a href="@Url.Action("Movimientos", "Movimientos", new { tarjetaId = tarjeta.Id })" class="btn btn-secondary">Transacciones</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = pageSize, search = search })">Anterior</a>
+        </li>
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = pageSize, search = search })">@i</a>
+            </li>
+        }
+        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = pageSize, search = search })">Siguiente</a>
+        </li>
+    </ul>
+</nav>
+
+<script>
+    $(document).ready(function () {
+        $("#recordsPerPage").change(function () {
+            var selectedValue = $(this).val();
+            var searchValue = $("#search").val();
+            window.location.href = "@Url.Action("Index", new { page = 1 })&pageSize=" + selectedValue + "&search=" + searchValue;
+        });
+
+        $("#search").on("input", function () {
+            var searchValue = $(this).val().toLowerCase();
+            var pageSize = $("#recordsPerPage").val();
+            window.location.href = "@Url.Action("Index", new { page = 1 })&pageSize=" + pageSize + "&search=" + searchValue;
+        });
+    });
+</script>

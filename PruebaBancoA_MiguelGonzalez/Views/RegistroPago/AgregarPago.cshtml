@@ -1,0 +1,57 @@
+﻿@model PruebaBancoA_MiguelGonzalez.Models.TarjetaPagoViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Registro de Compra</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Registro de Pago</h2>
+        <form asp-action="RegistrarC" asp-controller="RegistroPago" method="post" class="border p-4">
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Nombre del Cliente:</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">@Model.Tarjeta.Nombre @Model.Tarjeta.Apellido</p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Número de Tarjeta de Crédito:</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">@Model.Tarjeta.Trajeta</p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="FechaCompra" class="col-sm-3 col-form-label">Fecha de Compra:</label>
+                <div class="col-sm-9">
+                    <input type="hidden" asp-for="RPagos.TarjetaId" />
+                    <input type="date" class="form-control" id="FechaCompra" asp-for="RPagos.FechaCompra" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="Monto" class="col-sm-3 col-form-label">Monto:</label>
+                <div class="col-sm-9">
+                    <input type="number" step="0.01" class="form-control" id="Monto" asp-for="RPagos.Monto" required />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-9 offset-sm-3">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

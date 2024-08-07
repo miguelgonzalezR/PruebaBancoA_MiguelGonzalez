@@ -1,0 +1,72 @@
+﻿@model IEnumerable<PruebaBancoA_MiguelGonzalez.Models.MovimientosViewModel>
+
+
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Estado de Cuenta de TC</h2>
+
+        @foreach (var historial in Model)
+        {
+
+            <div class="row mb-3 estado-cuenta-header">
+                <div class="col-md-6">
+                    <p><strong>Nombre del Cliente: @historial.Tarjeta.Nombre @historial.Tarjeta.Apellido </strong> </p>
+                    <p><strong>Número de Tarjeta de Crédito:  @historial.Tarjeta.Trajeta </strong> </p>
+                </div>
+
+            </div>
+
+            <table class="table table-bordered estado-cuenta-table">
+                <thead>
+                    <tr>
+                        <th>Número de Autorización</th>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                        <th>Cargo</th>
+                        <th>Abono</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Movi in historial.Movi)
+                    {
+                        <tr>
+                            <td>@Movi.Id</td>
+                            <td>@Movi.FechaCompra.ToString("dd-MM-yyyy")</td>
+                            <td>@Movi.Descripcion</td>
+
+                            @if (@Movi.Tipo == "Compra")
+                            {
+                                <td>$@Movi.Monto</td>
+                            }
+
+                            else
+                            {
+                                <td></td>
+                            }
+
+                            @if (@Movi.Tipo == "Pago")
+                            {
+                                <td>$@Movi.Monto</td>
+                            }
+
+                            else
+                            {
+                                <td></td>
+                            }
+
+                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        }
+
+        <div class="row mt-3">
+
+            <div class="col-md-4">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Regresar</a>
+            </div>
+        </div>
+    </div>
+</body>
